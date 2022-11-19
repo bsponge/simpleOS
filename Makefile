@@ -20,7 +20,7 @@ build/kernel.bin: build/kernel_entry.o ${OBJ}
 
 .PHONY: build/%.o
 build/%.o : src/%.c ${HEADERS}
-	gcc -m32 -fno-pie -ffreestanding -c $< -o $@
+	gcc -m32 -fno-pie -ffreestanding -Isrc -c $< -o $@
 
 .PHONY: build/%.o
 build/%.o : src/boot/%.asm
