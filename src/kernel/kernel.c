@@ -5,5 +5,8 @@ void main() {
 		*(video_memory+i) = ' ';
 	}
 
-	*video_memory = 'X';
+	char *msg = "Hello World!";
+	for (int i = 0; msg[i/2] ; i+=2) {
+		*(video_memory+i) = msg[i/2];
+	}
 }
