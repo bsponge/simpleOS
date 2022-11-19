@@ -44,11 +44,11 @@ MSG_LOAD_KERNEL	db "Loading kernel into memory.", 0
 MSG_REAL_MODE	db "Started in 16-bit Real mode", 0
 MSG_PROT_MODE	db "Successfully landed in 32-bit Protected Mode", 0
 
-%include "src/print/print_16bit.asm"
-%include "src/print/print_32bit.asm"
-%include "src/disk_load.asm"
-%include "src/protected_mode/gdt.asm"
-%include "src/protected_mode/switch_to_32bit.asm"
+%include "src/boot/print_16bit.asm"
+%include "src/boot/print_32bit.asm"
+%include "src/boot/disk_load.asm"
+%include "src/boot/gdt.asm"
+%include "src/boot/switch_to_32bit.asm"
 
 times 510-($-$$) db 0
 dw 0xaa55
