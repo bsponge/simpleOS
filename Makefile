@@ -1,30 +1,41 @@
-C_SOURCES = $(wildcard kernel/*.c drivers/*.c)
-HEADERS = $(wildcard kernel/*.h drviers/*.h)
-OBJ = ${C_SOURCES:.c=.o}
+C_SOURCES = $(wildcard src/kernel/*.c src/drivers/*.c)
+HEADERS = $(wildcard src/kernel/*.h src/drviers/*.h)
+OBJ = $(patsubst src/%.c, build/%.o, $(C_SOURCES))
 
+.PHONY: build
+build: prepare-dirs os-image
 
-.PHONY: build-binary
-build-binary: build/kernel_entry.o build/kernel.o ${OBJ}
-	mkdir -p build
-	nasm src/boot/boot.asm -i src/boot -f bin -o build/boot.bin
-	ld -m elf_i386 -o build/kernel.bin -Ttext 0x1000 $^ --oformat binary
-	cat build/boot.bin build/kernel.bin > build/os-image
+.PHONY: os-image
+os-image: build/boot.bin build/kernel.bin
+	cat $^ > build/os-image
 	cp build/os-image /mnt/c/Program\ Files/qemu/
 
-.PHONY: build/kernel.o
-build/kernel.o:
-	gcc -m32 -fno-pie -ffreestanding -c src/kernel/kernel.c -o build/kernel.o
+.PHONY: build/boot.bin
+build/boot.bin:
+	nasm src/boot/boot.asm -i src/boot -f bin -o build/boot.bin
 
-.PHONY: build/kernel_entry.o
-build/kernel_entry.o:
-	nasm src/boot/kernel_entry.asm -f elf32 -o build/kernel_entry.o
+.PHONY: build/kernel.bin
+build/kernel.bin: build/kernel_entry.o ${OBJ}
+	ld -m elf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary
 
 .PHONY: build/%.o
-build/%.o : %.c
+build/%.o : src/%.c ${HEADERS}
 	gcc -m32 -fno-pie -ffreestanding -c $< -o $@
+
+.PHONY: build/%.o
+build/%.o : src/boot/%.asm
+	nasm $< -f elf32 -o $@
+
+.PHONY: build/%.bin
+build/%.bin : src/boot/%.asm
+	nasm $< -i src/boot -f bin -o $@
 
 .PHONY: clear
 clear:
 	rm -rf build/*
 
-
+.PHONY: prepare-dirs
+prepare-dirs:
+	mkdir -p build/boot
+	mkdir -p build/kernel
+	mkdir -p build/drivers
