@@ -1,10 +1,8 @@
 # simpleOS
 simple operating system
 
-make build-os-image
-
-to run 
+to run:
 ```
-make
+make build-os-image
 ./qemu-system-x86_64 build/os-image
 ```
