@@ -2,13 +2,21 @@ C_SOURCES = $(wildcard src/kernel/*.c src/drivers/*.c)
 HEADERS = $(wildcard src/kernel/*.h src/drviers/*.h)
 OBJ = $(patsubst src/%.c, build/%.o, $(C_SOURCES))
 
+.PHONY: build-docker-image
+build-docker-image:
+	docker build -t builder .
+
+.PHONY: build-os-image
+build-os-image: build-docker-image
+	mkdir build
+	docker run -v ./build:/output builder
+
 .PHONY: build
 build: prepare-dirs os-image
 
 .PHONY: os-image
 os-image: build/boot.bin build/kernel.bin
 	cat $^ > build/os-image
-	cp build/os-image /mnt/c/Program\ Files/qemu/
 
 .PHONY: build/boot.bin
 build/boot.bin:
