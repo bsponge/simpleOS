@@ -7,8 +7,8 @@ build-docker-image:
 	docker build -t builder .
 
 .PHONY: build-os-image
-build-os-image: build-docker-image
-	mkdir build
+build-os-image: clear build-docker-image
+	mkdir -p build
 	docker run -v ./build:/output builder
 
 .PHONY: build
