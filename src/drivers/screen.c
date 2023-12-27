@@ -26,7 +26,7 @@ void print_char(char character, int col, int row, char attribute_byte) {
 	}
 
 	offset += 2;
-	//offset = handle_scrolling(offset);
+	offset = handle_scrolling(offset);
 	set_cursor(offset);
 }
 
@@ -87,12 +87,19 @@ void printf(char *message, ...) {
 					if (value < 0) {
 						print_char('-', col, row, WHITE_ON_BLACK);
 					}
+					if (value == 0) {
+						print_char('0', col, row, WHITE_ON_BLACK);
+					}
 
 					int denominator = 1000000000;
+					char first = 0;
 
 					while (denominator) {
 						int result = value/denominator;
-						if (result != 0) {
+						if (result) {
+							first = 1;
+						}
+						if (first) {
 							print_char(48+result, col, row, WHITE_ON_BLACK);
 							value = value - result*denominator;
 						}
@@ -117,5 +124,17 @@ void printf(char *message, ...) {
 }
 
 int handle_scrolling(int offset) {
-	return 0;
+	unsigned char *vidmem = (unsigned char *) VIDEO_ADDRESS;
+
+	if (offset > 2*MAX_ROWS*MAX_COLS) {
+		for (int i = 1; i < MAX_ROWS-1; i++) {
+			for (int j = 0; j < MAX_COLS*2; j++) {
+				vidmem[2*(i-1)*MAX_COLS+j] = vidmem[2*i*MAX_COLS+j];
+			}
+		}
+
+		return 2*(MAX_ROWS-1)*MAX_COLS + (offset%MAX_COLS);
+	}
+
+	return offset;
 }
