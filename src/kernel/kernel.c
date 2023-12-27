@@ -18,8 +18,8 @@ void main() {
 
 	print(msg);
 	print(msg);
-	char *template = "format: %d\n";
-	printf(template, 123);
+	char *template = "format: %d str: %s\n";
+	printf(template, 123, "random string");
 
 	//idt_init();
 

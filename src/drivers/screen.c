@@ -80,6 +80,7 @@ void printf(char *message, ...) {
 	while (message[i]) {
 		if (message[i] == '%' && message[i+1]) {
 			int value;
+			char *str;
 			switch (message[i+1]) {
 				case 'd':
 					value = va_arg(args, int);
@@ -99,6 +100,8 @@ void printf(char *message, ...) {
 					}
 					break;
 				case 's':
+					str = va_arg(args, char *);
+					print(str);
 					break;
 				default:
 					return;
