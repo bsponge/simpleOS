@@ -23,7 +23,7 @@ load_kernel:
 	call print_string
 
 	mov bx, KERNEL_OFFSET
-	mov dh, 2
+	mov dh, 5 ; load 5 sectors from boot disk
 	mov dl, [BOOT_DRIVE]
 	call disk_load
 

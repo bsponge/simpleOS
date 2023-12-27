@@ -1,3 +1,5 @@
+#include <stdarg.h>
+
 #define VIDEO_ADDRESS 0xb8000
 #define MAX_ROWS 25
 #define MAX_COLS 80
@@ -12,3 +14,4 @@ void set_cursor(int offset);
 int handle_scrolling(int offset);
 void print_at(char *message, int col, int row);
 void print(char *message);
+void printf(char *format, ...);

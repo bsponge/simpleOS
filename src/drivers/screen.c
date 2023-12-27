@@ -1,6 +1,8 @@
 #include "drivers/screen.h"
 #include "kernel/low_level.h"
 
+#include <stdarg.h>
+
 void print_char(char character, int col, int row, char attribute_byte) {
 	unsigned char *vidmem = (unsigned char *) VIDEO_ADDRESS;
 
@@ -62,6 +64,53 @@ void print_at(char *message, int col, int row) {
 
 void print(char *message) {
 	print_at(message, -1, -1);
+}
+
+void printf(char *message, ...) {
+	va_list args;
+	va_start(args, message);
+
+
+	int col = -1;
+	int row = -1;
+
+	char buff[20];
+	int i = 0;
+	
+	while (message[i]) {
+		if (message[i] == '%' && message[i+1]) {
+			int value;
+			switch (message[i+1]) {
+				case 'd':
+					value = va_arg(args, int);
+					if (value < 0) {
+						print_char('-', col, row, WHITE_ON_BLACK);
+					}
+
+					int denominator = 1000000000;
+
+					while (denominator) {
+						int result = value/denominator;
+						if (result != 0) {
+							print_char(48+result, col, row, WHITE_ON_BLACK);
+							value = value - result*denominator;
+						}
+						denominator /= 10;
+					}
+					break;
+				case 's':
+					break;
+				default:
+					return;
+			};
+			i += 2;
+		} else {
+			print_char(message[i], col, row, WHITE_ON_BLACK);
+			i++;
+		}
+	}
+
+	va_end(args);
 }
 
 int handle_scrolling(int offset) {

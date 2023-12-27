@@ -3,14 +3,14 @@ ASM_SOURCES = $(wildcard src/kernel/*.asm)
 C_OBJ = $(patsubst src/%.c, build/%.o, $(C_SOURCES))
 ASM_OBJ = $(patsubst src/%.asm, build/%.o, $(ASM_SOURCES))
 
-.PHONY: build-docker-image
-build-docker-image:
-	docker build -t builder .
-
 .PHONY: build-os-image
 build-os-image: clear build-docker-image
 	mkdir -p build
 	docker run -v ./build:/output builder
+
+.PHONY: build-docker-image
+build-docker-image:
+	docker build -t builder .
 
 .PHONY: build
 build: prepare-dirs os-image
