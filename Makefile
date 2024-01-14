@@ -1,7 +1,9 @@
 C_SOURCES = $(wildcard src/kernel/*.c src/drivers/*.c src/utils/*.c)
+IDT_C_SOURCES = $(wildcard src/idt/*.c)
 ASM_SOURCES = $(wildcard src/kernel/*.asm)
 C_OBJ = $(patsubst src/%.c, build/%.o, $(C_SOURCES))
 ASM_OBJ = $(patsubst src/%.asm, build/%.o, $(ASM_SOURCES))
+IDT_C_OBJ = $(patsubst src/%.c, build/%.o, $(IDT_C_SOURCES))
 
 .PHONY: build-os-image
 build-os-image: clear build-docker-image
@@ -24,12 +26,16 @@ build/boot.bin:
 	nasm src/boot/boot.asm -i src/boot -f bin -o build/boot.bin
 
 .PHONY: build/kernel.bin
-build/kernel.bin: build/kernel_entry.o ${C_OBJ} ${ASM_OBJ}
+build/kernel.bin: build/kernel_entry.o ${C_OBJ} ${ASM_OBJ} ${IDT_C_OBJ}
 	ld -m elf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary
 
 .PHONY: build/%.o
 build/%.o : src/%.c
 	gcc -m32 -fno-pie -ffreestanding -Isrc -c $< -o $@
+
+.PHONY: build/idt/idt.o
+build/idt/idt.o: src/idt/idt.c
+	gcc -m32 -fno-pie -ffreestanding -mgeneral-regs-only -Isrc -c src/idt/idt.c -o build/idt/idt.o
 
 .PHONY: build/%.o
 build/%.o : src/%.asm
@@ -49,3 +55,4 @@ prepare-dirs:
 	mkdir -p build/kernel
 	mkdir -p build/drivers
 	mkdir -p build/utils
+	mkdir -p build/idt

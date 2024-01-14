@@ -2,3 +2,4 @@
 
 
 void init_pic();
+void PIC_sendEOI();

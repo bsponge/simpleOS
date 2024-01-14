@@ -127,8 +127,8 @@ int handle_scrolling(int offset) {
 	unsigned char *vidmem = (unsigned char *) VIDEO_ADDRESS;
 
 	if (offset > 2*MAX_ROWS*MAX_COLS) {
-		for (int i = 1; i < MAX_ROWS-1; i++) {
-			for (int j = 0; j < MAX_COLS*2; j++) {
+		for (int i = 1; i <= MAX_ROWS-1; i++) {
+			for (int j = 0; j <= MAX_COLS*2; j++) {
 				vidmem[2*(i-1)*MAX_COLS+j] = vidmem[2*i*MAX_COLS+j];
 			}
 		}

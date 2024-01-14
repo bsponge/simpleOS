@@ -1,6 +1,6 @@
 #include "drivers/screen.h"
 #include "kernel/low_level.h"
-#include "kernel/idt.h"
+#include "idt/idt.h"
 #include "kernel/pic.h"
 
 void main() {
@@ -21,12 +21,14 @@ void main() {
 	char *template = "format: %d str: %s\n";
 	printf(template, 123, "random string");
 
-	//idt_init();
+	print(msg);
+
+	init_idt();
+	init_pic(0x28, 0x20);
 
 	print(msg);
 
-	//init_pic();
+	asm volatile("int $33");
 
-	print(msg);
-
+	while (1) {}
 }
