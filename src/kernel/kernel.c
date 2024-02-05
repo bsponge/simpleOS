@@ -23,12 +23,19 @@ void main() {
 
 	print(msg);
 
-	init_idt();
 	init_pic(0x28, 0x20);
+	init_idt();
 
 	print(msg);
 
+	/*
 	asm volatile("int $33");
+	asm volatile("int $33");
+	asm volatile("int $33");
+	asm volatile("int $33");
+	*/
 
-	while (1) {}
+	while (1) {
+		asm("hlt");
+	}
 }

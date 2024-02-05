@@ -6,27 +6,18 @@
 int counter = 0;
 
 void exception_handler(struct interrupt_frame *frame) {
-	/*
 	char *msg = "INTERRUPT: %d!\n";
 	printf(msg, counter);
 	counter++;
-	*/
 }
 
 __attribute__((interrupt)) void keyboard_handler(struct interrupt_frame *frame) {
 	//printf("KEYBOARD PRESSED %d\n", counter);
-	print("pressed\n");
+	uint8_t key = inb(0x60);
+	printf("pressed %d\n", key);
 	counter++;
 	PIC_sendEOI();
 }
-
-/*
-void exception_handler() {
-	char *msg = "INTERRUPT: %d!\n";
-	printf(msg, counter);
-	counter++;
-}
-*/
 
 void setup_idt_entry(struct interrupt_descriptor* entry, void (*isr_function)(), uint16_t selector, uint8_t type_attr) {
 	uint32_t isr_address = (uint32_t)isr_function;
@@ -57,6 +48,10 @@ void init_idt() {
 	// Set the size and base address of the IDT
 	idt_descriptor.limit = 8*(size - 1);
 	idt_descriptor.base = (uint32_t)idt;
+
+	__asm__ volatile ("cli");
+	outb(0x21, 0x01); // Enable keyboard interrupt (if using the master PIC)
+	//outb(0xA1, 0x01); // Enable keyboard interrupt (if using the slave PIC)
 
 	__asm__ volatile ("lidt %0" : : "m"(idt_descriptor)); // load the new IDT
 	__asm__ volatile ("sti"); // set the interrupt flag
